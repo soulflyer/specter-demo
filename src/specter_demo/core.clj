@@ -25,9 +25,20 @@
 
 (comment
 
+
   ;; Use select to find something
+  (select [0] data)
+  (select [0 1] data)
+  (select [0 1 1 :other] data)
   (select [0 1 1 :other 1 :hello] data)
 
+  ;; this works very much like get-in but with the parameters reversed
+  (get-in data [0 1])
+
+  ;; Also notice that select returns a vector of results. If we only want one then use select-one
+  (select-one [0 1] data)
+
+  ;; Once the path is correct it may be better to define it (see above)
   (select path-to-hello data)
 
   ;; Use setval to change something to a fixed value
@@ -48,9 +59,18 @@
   (->> data
     (transform [(walker uuid?)] str)
     (transform [(walker inst?)] to-unix-time))
-
   )
 
+;; Inspired by Misophistful's screencast https://www.youtube.com/watch?v=rh5J4vacG98
+;; Further investigation: zippers & parser
+;;
+;; zippers allow for changes to be made on items in the data structure depending on items around it.
+;; Here is an example of its use: https://github.com/soulflyer/hinh-anh/blob/master/src_front/anh_front/tree/tree.cljs
+;; There it is being used to implement a tree navigation structure for a clojurescript UI
+;;
+;; parser alows us to specify 2 functions, parse and unparse. The first is applied as specter does its search,
+;; the second is applied as specter rebuilds the datastructure to be returned.
+;; The Misophistful screencast has an example of this at around 34:00.
 
 (defn to-unix-time
   "Return the number of seconds after the Unix time
@@ -70,5 +90,3 @@
   (->> data
     (transform [(walker uuid?)] str)
     (transform [(walker inst?)] to-unix-time)))
-
-;; Inspired by Misophistful's screencast https://www.youtube.com/watch?v=rh5J4vacG98
